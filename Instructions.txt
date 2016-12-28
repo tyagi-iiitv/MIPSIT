@@ -1,0 +1,6 @@
+# While working on ubuntu using wine
+
+# If the library MFC42.DLL isn't found while running mipspipe2000.exe then install it using the following commands
+	# sudo add-apt-repository  ppa:ubuntu-wine/ppa
+	# sudo apt-get update && sudo apt-get updrade
+	# winetrics mfc42
