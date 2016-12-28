@@ -1,0 +1,34 @@
+
+class CRegIfId
+{
+	in Ph0:1
+	in Ph1:1
+	in in_Instruction
+	in in_PC
+	out out_Instruction
+	out out_PC
+
+	script
+		// phase 0 transfers inputs to these variables
+		// phase 1 transfers these variables to the outputs
+		var rInstruction;
+		var rPC;
+		
+		function OnPh0()
+			{
+				rInstruction = in_Instruction.Get();
+				rPC = in_PC.Get();
+			}
+	
+		function OnPh1()
+			{
+				out_Instruction.Set(rInstruction);
+				out_PC.Set(rPC);
+			}
+		
+	end_script
+	
+	event Ph0 OnPh0()
+	event Ph1 OnPh1()
+}
+

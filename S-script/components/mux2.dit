@@ -1,0 +1,22 @@
+class CMux2
+{
+	in In0
+	in In1
+	in Control:1
+
+	out Out
+
+	script
+		function OnChange()
+		{
+			if ( Control.Get()==0 )
+				Out.Set( In0.Get() );
+			else
+				Out.Set( In1.Get() );
+		}
+
+		Out.Set(0);
+	end_script
+
+	event ALL OnChange()
+}	

@@ -1,0 +1,21 @@
+// this is the Jump Logic
+class CJumpLogic
+{
+	in Instruction:26
+	in PC
+	out Out
+
+	script
+		function OnChange()
+		{
+			var tInstr = Instruction.Get() << 2;
+			var tPc = PC.Get()&0xf0000000;
+			
+			Out.Set(tPc|tInstr);
+		}
+		
+	end_script
+	
+	event ALL OnChange()
+}
+

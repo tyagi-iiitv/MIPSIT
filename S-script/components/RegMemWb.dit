@@ -1,0 +1,51 @@
+
+class CRegMemWb
+{
+	// clock
+	in Ph0:1
+	in Ph1:1
+	
+	// inputs
+	in in_RegWrite:1
+	in in_WbData
+	in in_WbReg:5
+	in in_Instr
+	
+	// outputs
+	out out_RegWrite:1
+	out out_WbData
+	out out_WbReg:5
+	out out_Instr
+	
+	
+	script
+		// phase 0 transfers inputs to these variables
+		// phase 1 transfers these variables to the outputs
+		
+	   	var RegDst;
+    	var WbData;
+		var WbReg;
+		var Instr;
+		
+		function OnPh0()
+			{
+				RegWrite = in_RegWrite.Get();
+    			WbData = in_WbData.Get();
+				WbReg= in_WbReg.Get();
+				Instr = in_Instr.Get();
+			}
+	
+		function OnPh1()
+			{
+				out_RegWrite.Set( RegWrite );
+    			out_WbData.Set( WbData );
+				out_WbReg.Set( WbReg );
+				out_Instr.Set( Instr );
+			}
+		
+	end_script
+	
+	event Ph0 OnPh0()
+	event Ph1 OnPh1()
+}
+

@@ -1,0 +1,116 @@
+// create the objects in this stage
+
+object CMux2 AluMuxA
+object CMux2 AluMuxB
+object CiAlu Alu
+object CAluControl AluControl
+object CMux2 RegDstMux
+object CMux2 NotJalMux
+object CConstant31 Constant31
+object CRegExMem RegExMem
+
+
+// connections:
+
+// to forwaring unit
+connect NotJalMux.Out ForwardingUnit.EX_WriteRegister
+connect RegIdEx.out_RegWrite ForwardingUnit.EX_RegWrite
+
+// to the forward muxes
+connect Alu.Out ForwardMuxA.In2
+connect Alu.Out ForwardMuxB.In2
+
+
+// upper alu mux
+connect RegIdEx.out_PC AluMuxA.In0
+connect RegIdEx.out_Data0 AluMuxA.In1
+connect RegIdEx.out_NotJal AluMuxA.Control
+
+// lower alu mux
+connect RegIdEx.out_Data1 AluMuxB.In0
+connect RegIdEx.out_Immediate AluMuxB.In1
+connect RegIdEx.out_ALUSrc AluMuxB.Control
+
+// Alu:
+connect AluMuxA.Out Alu.InA
+connect AluMuxB.Out Alu.InB
+connect AluControl.Out Alu.Operation
+
+// Alu Control:
+connect RegIdEx.out_ALUOp AluControl.ALUOp
+connect RegIdEx.out_Immediate AluControl.Func
+
+// RegDst Mux
+connect RegIdEx.out_RegDst RegDstMux.Control
+connect RegIdEx.out_Instr20_16 RegDstMux.In0
+connect RegIdEx.out_Instr15_11 RegDstMux.In1
+
+// NotJalMux:
+connect RegIdEx.out_NotJal NotJalMux.Control
+connect Constant31.Out NotJalMux.In0
+connect RegDstMux.Out NotJalMux.In1
+
+// the strange constant (this keeps it happy)
+connect RegIdEx.out_NotJal Constant31.In
+
+// pipline register:
+connect RegIdEx.out_RegWrite RegExMem.in_RegWrite
+connect RegIdEx.out_RegDst RegExMem.in_RegDst
+connect RegIdEx.out_MemRead RegExMem.in_MemRead
+connect RegIdEx.out_MemWrite RegExMem.in_MemWrite
+connect RegIdEx.out_MemToReg RegExMem.in_MemToReg
+connect Alu.Out RegExMem.in_AluResult
+connect RegIdEx.out_Data1 RegExMem.in_WriteData
+connect NotJalMux.Out RegExMem.in_WbReg
+
+
+// clock
+connect clk.Ph0 RegExMem.Ph0
+connect clk.Ph1 RegExMem.Ph1
+
+connect RegIdEx.out_Instr RegExMem.in_Instr
+
+
+// probes:
+// connect RegIdEx.out_PC AluMuxA.In0
+// connect RegIdEx.out_Data0 AluMuxA.In1
+
+probe  RegIdEx.out_PC 570 299 16 8 1
+probe RegIdEx.out_Data0 535 370 16 8 1
+probe AluMuxA.Out 619 327 16 8 1 
+
+
+// lower alu mux
+// connect RegIdEx.out_Data1 AluMuxB.In0
+// connect RegIdEx.out_Immediate AluMuxB.In1
+probe RegIdEx.out_Data1 515 390 16 8 1
+//probe RegIdEx.out_Immediate 515 463 16 8 1
+probe AluMuxB.Out 582 421 16 8 0
+
+
+probe NotJalMux.Out 457 650 16 2 0
+probe RegIdEx.out_RegWrite 443 660 16 1 0
+
+
+probe RegIdEx.out_RegWrite 668 221 16 1 0
+probe Alu.Out 665 359 16 8 1
+probe NotJalMux.Out 627 557 16 2 0
+
+probe RegIdEx.out_ALUOp 578 475 16 2 0
+probe AluControl.Out 638 423 16 2 0
+probe RegIdEx.out_Immediate 536 492 16 8 0
+
+
+probe RegIdEx.out_RegDst 544 544 16 2 4
+probe RegIdEx.out_Instr20_16 520 550 16 2 0
+probe RegIdEx.out_Instr15_11 520 565 16 2 0
+
+
+probe RegIdEx.out_NotJal 605 545 16 2 4
+probe RegIdEx.out_NotJal 598 346 16 2 4
+
+probe RegIdEx.out_Instr 514 4 16 25 2
+
+
+probe RegIdEx.out_ALUSrc 559 411 16 2 4
+

@@ -1,0 +1,21 @@
+
+class CInstrSplit
+{
+	in Instruction
+	out rs:5
+	out rt:5
+	out rd:5
+
+	script
+		function OnChange()
+			{
+				var instr = Instruction.Get();
+
+				rs.Set(instr>>>21);
+				rt.Set(instr>>>16);
+				rd.Set(instr>>>11);
+			}
+	end_script
+	
+	event ALL OnChange()
+}

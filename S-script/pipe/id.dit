@@ -1,0 +1,81 @@
+// create the components in the ID stage
+object CControl Control
+object CShiftLeft2 ShiftLeft2
+object CRegisterBank RegisterBank
+object CSignExtend SignExtend
+object CRegIdEx RegIdEx
+// this one is invisible...
+object CInstrSplit InstrSplit
+object CMux2 RegDstMux
+object CBranchCmp BranchCmp
+
+// CONNECT THINGS
+
+// the Control Unit:
+connect RegIfId.out_Instruction Control.Instruction
+
+// register bank:
+// (some are done later...)
+connect InstrSplit.rs RegisterBank.ReadRegister1
+connect InstrSplit.rt RegisterBank.ReadRegister2
+
+// signextend:
+connect RegIfId.out_Instruction SignExtend.In
+
+// instrsplit
+connect RegIfId.out_Instruction InstrSplit.Instruction
+
+// RegDst Mux
+connect Control.RegDst RegDstMux.Control
+connect InstrSplit.rt RegDstMux.In0
+connect InstrSplit.rd RegDstMux.In1
+
+// Branch cmp:
+connect RegisterBank.ReadData1 BranchCmp.In0
+connect RegisterBank.ReadData2 BranchCmp.In1
+
+// the Control Unit from the ID stage:
+connect BranchCmp.Out Control.BranchCondition
+
+
+
+// the pipe register:
+connect Control.RegWrite RegIdEx.in_RegWrite
+connect Control.RegDst RegIdEx.in_RegDst
+connect Control.ALUSrc RegIdEx.in_ALUSrc
+connect Control.NotJal RegIdEx.in_NotJal
+connect Control.ALUOp RegIdEx.in_ALUOp
+connect Control.MemRead RegIdEx.in_MemRead
+connect Control.MemWrite RegIdEx.in_MemWrite
+connect Control.MemToReg RegIdEx.in_MemToReg
+connect Control.BranchControl RegIdEx.in_BranchControl
+connect RegIfId.out_PC RegIdEx.in_PC
+connect RegisterBank.ReadData1 RegIdEx.in_Data0
+connect RegisterBank.ReadData2 RegIdEx.in_Data1
+connect SignExtend.Out RegIdEx.in_Immediate
+
+connect RegDstMux.Out RegIdEx.in_WbReg
+
+
+// Connect the clock
+
+connect clk.Ph0 RegIdEx.Ph0
+connect clk.Ph1 RegIdEx.Ph1
+
+// the register bank is kinda clocked...
+connect clk.Ph2 RegisterBank.Ph2
+
+connect RegIfId.out_Instruction RegIdEx.in_Instr
+
+// probes
+probe InstrSplit.rs 271 252 16 2 0
+probe InstrSplit.rt 271 288 16 2 0
+
+probe RegIfId.out_Instruction 293 478 16 4 1
+probe SignExtend.Out 382 460 16 8 1
+
+probe RegDstMux.Out 343 550 16 2 0
+
+probe RegisterBank.ReadData1 405 245 16 8 1
+probe RegisterBank.ReadData2 405 328 16 8 1
+//probe Control.BranchControl 343 550 16 2 0

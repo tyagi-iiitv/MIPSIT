@@ -1,0 +1,261 @@
+class CControl
+{
+    in Instruction         // The entire instruction
+    in BranchCondition:1   // From branch condition
+
+    out BranchControl:2    // 0: beq, bne
+	                   // 1: j, jal
+	                   // 2: jr, jalr
+	                   // 3: default
+    out RegWrite:1         // 0: Don't update register, 1: update register
+    out RegDst:1           // 0: rt dest reg, 1: rd dest reg (default)
+    out ALUSrc:1           // 0: R[rt] ALU src, 1: Imm. ALU src
+    out NotJal:1           // 0: jal, jalr, 1: default
+    out ALUOp:4            // 0: pass (default)
+                           // 1: from func field
+	                   // 2: add
+	                   // 3: sub
+	                   // 4: and
+	                   // 5: or
+	                   // 6: xor
+	                   // 7: lui
+	                   // 8: shift
+	                   // 9: slt
+
+    out MemRead:3          // 0: no read (default)
+	                   // 1: word
+	                   // 2: half word, signed
+	                   // 3: byte, signed 
+	                   // 6: half word, unsigned
+	                   // 7: byte, unsigned
+    out MemWrite:2         // 0: No write (default)
+	                   // 1: word
+	                   // 2: half word
+	                   // 3: byte
+    out MemToReg:1         // 0: memory result to reg
+	                   // 1: ALU result to reg (default)
+
+    out UnknownOP:1
+
+	script
+
+	// Declare variables with default values
+	var VBranchControl;
+    	var VRegWrite;
+	var VRegDst;
+	var VALUSrc;
+	var VNotJal;
+	var VALUOp;
+	var VMemRead;
+	var VMemWrite;
+	var VMemToReg;
+
+
+	function ALU_Rformat(Func)
+	{
+	    
+	    switch(Func){
+	    case 0x08:
+		// jr
+		VBranchControl = 2;
+
+		break;
+	    case 0x09:
+		// jalr
+		VBranchControl = 2;
+		VNotJal = 0;
+		
+		break;
+	    case 0x00:	// sll
+	    case 0x02:	// srl
+	    case 0x03:	// sra
+	    case 0x20:	// add
+	    case 0x22:	// sub
+	    case 0x24:	// and
+	    case 0x25:	// or
+	    case 0x26:	// xor
+	    case 0x27:	// nor
+	    case 0x2a:	// slt
+		VRegWrite = 1;
+		VALUOp = 1;  // from func
+		
+		break;
+	    default:
+		// unimplemented or unknown instruction
+	    }
+	    
+	}
+	
+	function OnInstruction()
+	    {
+		VBranchControl = 3;
+		VRegWrite = 0;
+		VRegDst = 1;
+		VALUSrc = 0;
+		VNotJal = 1;
+		VALUOp = 0;
+		VMemRead = 0;
+		VMemWrite = 0;
+		VMemToReg = 1;
+		
+		// Ja, det ska vara '>>>'. 
+		// Det är unsigned right shift
+		OpCode = Instruction.Get() >>> 26;
+		Func = Instruction.Get() & 0x1f;
+
+		switch(OpCode)
+		    {
+		    case 0x0:
+			// r-format.
+			ALU_Rformat(Func);
+			break;
+		    case 0x2:
+			// j
+			VBranchControl = 1;
+			break;
+		    case 0x3:
+			// jal
+			VBranchControl = 1;
+			VRegWrite = 1;
+			VNotJal = 0;
+			break;
+		    case 0x4:
+			// beq
+			if (BranchCondition.Get() != 0){
+			    VBranchControl = 0;
+			}
+			break;
+		    case 0x5:
+			// bne
+			if (BranchCondition.Get() == 0){
+			    VBranchControl = 0;
+			}
+			break;
+		    case 0x8:	// addi
+		    case 0x9:	// addiu
+			VRegWrite = 1;
+			VRegDst = 0;
+			VALUSrc = 1;
+			VALUOp = 2;  // add
+			break;
+		    case 0xa:	// slti
+			VRegWrite = 1;
+			VRegDst = 0;
+			VALUSrc = 1;
+			VALUOp = 9;  // slt
+			
+			break;
+		    case 0xc:	// andi
+			VRegWrite = 1;
+			VRegDst = 0;
+			VALUSrc = 1;
+			VALUOp = 4;  // and
+			
+			break;
+		    case 0xd:	// ori
+			VRegWrite = 1;
+			VRegDst = 0;
+			VALUSrc = 1;
+			VALUOp = 5;  // and
+			
+			break;
+		    case 0xe:	// xori
+			VRegWrite = 1;
+			VRegDst = 0;
+			VALUSrc = 1;
+			VALUOp = 6;  // and
+			
+			break;
+		    case 0xf:	// lui
+			VRegWrite = 1;
+			VRegDst = 0;
+			VALUSrc = 1;
+			VALUOp = 7;  // and
+			
+			break;
+		    case 0x20:	// lb
+			VRegWrite = 1;
+			VRegDst = 0;
+			VALUSrc = 1;
+			VALUOp = 2;  // add
+			VMemRead = 3;
+			VMemToReg = 0;
+			
+			break;
+		    case 0x21:	// lh
+			VRegWrite = 1;
+			VRegDst = 0;
+			VALUSrc = 1;
+			VALUOp = 2;  // add
+			VMemRead = 2;
+			VMemToReg = 0;
+			
+			break;
+		    case 0x23:	// lw
+			VRegWrite = 1;
+			VRegDst = 0;
+			VALUSrc = 1;
+			VALUOp = 2;  // add
+			VMemRead = 1;
+			VMemToReg = 0;
+			
+			break;
+		    case 0x24:	// lbu
+			VRegWrite = 1;
+			VRegDst = 0;
+			VALUSrc = 1;
+			VALUOp = 2;  // add
+			VMemRead = 7;
+			VMemToReg = 0;
+			
+			break;
+		    case 0x25:	// lhu
+			VRegWrite = 1;
+			VRegDst = 0;
+			VALUSrc = 1;
+			VALUOp = 2;  // add
+			VMemRead = 6;
+			VMemToReg = 0;
+			
+			break;
+		    case 0x28:	// sb
+			VALUSrc = 1;
+			VALUOp = 2;  // add
+			VMemWrite = 3;
+			
+			break;
+		    case 0x29:	// sh
+			VALUSrc = 1;
+			VALUOp = 2;  // add
+			VMemWrite = 2;
+			
+			break;
+		    case 0x2b:	// sw
+			VALUSrc = 1;
+			VALUOp = 2;  // add
+			VMemWrite = 1;
+			
+			break;
+			
+		    default:
+			// unknown op
+			UnknownOP.Set(1);
+		    }
+		
+		BranchControl.Set(VBranchControl);
+		RegWrite.Set(VRegWrite);
+		RegDst.Set(VRegDst);
+		ALUSrc.Set(VALUSrc);
+		ALUOp.Set(VALUOp);  
+		NotJal.Set(VNotJal);
+		MemRead.Set(VMemRead);
+		MemWrite.Set(VMemWrite);
+		MemToReg.Set(VMemToReg);
+		
+	    }
+	end_script
+	    
+	    event Instruction OnInstruction()
+	    event BranchCondition OnInstruction()
+}
+

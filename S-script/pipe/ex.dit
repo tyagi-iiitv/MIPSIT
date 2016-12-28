@@ -1,0 +1,85 @@
+// create the objects in this stage
+
+object CiAdd BranchAdder
+object CMux2 AluMuxB
+object CiAlu Alu
+object CAluControl AluControl
+object CRegExMem RegExMem
+
+
+// connections:
+
+// <<2:
+connect RegIdEx.out_Immediate ShiftLeft2.In
+
+// branch-adder:
+connect ShiftLeft2.Out BranchAdder.InA
+connect RegIdEx.out_PC BranchAdder.InB
+
+// the pc-mux in the IF stage:
+connect RegIdEx.out_BranchControl PcMux.Control
+connect BranchAdder.Out PcMux.In1
+
+// lower alu mux
+connect RegIdEx.out_Data1 AluMuxB.In0
+connect RegIdEx.out_Immediate AluMuxB.In1
+connect RegIdEx.out_ALUSrc AluMuxB.Control
+
+// Alu:
+connect RegIdEx.out_Data0 Alu.InA
+connect AluMuxB.Out Alu.InB
+connect AluControl.Out Alu.Operation
+
+// Alu Control:
+connect RegIdEx.out_ALUOp AluControl.ALUOp
+connect RegIdEx.out_Immediate AluControl.Func
+
+// pipline register:
+connect RegIdEx.out_RegWrite RegExMem.in_RegWrite
+connect RegIdEx.out_RegDst RegExMem.in_RegDst
+connect RegIdEx.out_MemRead RegExMem.in_MemRead
+connect RegIdEx.out_MemWrite RegExMem.in_MemWrite
+connect RegIdEx.out_MemToReg RegExMem.in_MemToReg
+connect Alu.Out RegExMem.in_AluResult
+connect RegIdEx.out_Data1 RegExMem.in_WriteData
+connect RegIdEx.out_WbReg RegExMem.in_WbReg
+
+
+// clock
+connect clk.Ph0 RegExMem.Ph0
+connect clk.Ph1 RegExMem.Ph1
+
+connect RegIdEx.out_Instr RegExMem.in_Instr
+
+
+// probes:
+// connect ShiftLeft2.Out BranchAdder.InA
+// connect RegIdEx.out_PC BranchAdder.InB
+
+probe  RegIdEx.out_PC 544 170 16 8 0
+probe RegIdEx.out_Data0 544 303 16 8 0
+probe ShiftLeft2.Out 585 201 16 8 1
+
+
+// lower alu mux
+// connect RegIdEx.out_Data1 AluMuxB.In0
+// connect RegIdEx.out_Immediate AluMuxB.In1
+probe RegIdEx.out_Data1 479 316 16 8 1
+//probe RegIdEx.out_Immediate 515 463 16 8 1
+probe AluMuxB.Out 544 367 16 8 0
+
+probe BranchAdder.Out 544 124 16 8 0
+
+probe Alu.Out 635 302 16 8 1
+
+probe RegIdEx.out_Immediate 500 396 16 8 1
+
+probe RegIdEx.out_WbReg 554 553 16 2 0
+
+probe RegIdEx.out_Instr 478 4 16 30 2
+
+//probe BranchCmp.Out 360 175 16 1 0 //borde se ut som en utsignal från ALU
+probe RegIdEx.out_BranchControl 107 56 16 2 4
+
+probe RegIdEx.out_ALUSrc 525 358 16 2 4
+

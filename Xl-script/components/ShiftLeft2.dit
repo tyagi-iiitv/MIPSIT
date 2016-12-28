@@ -1,0 +1,15 @@
+class CShiftLeft2
+{
+	in In
+	out Out
+
+	
+	script
+		function OnChange()
+			{
+				Out.Set(In.Get()<<2);
+			}
+	end_script
+	
+	event ALL OnChange()
+}

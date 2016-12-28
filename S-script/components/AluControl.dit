@@ -1,0 +1,132 @@
+
+class CAluControl
+{
+	in ALUOp:4         	// 0: pass (default)
+                       	// 1: from func field
+	                   	// 2: add
+	                   	// 3: sub
+	                   	// 4: and
+	                   	// 5: or
+	                   	// 6: xor
+	                   	// 7: lui
+	                   	// 8: shift
+	                   	// 9: slt
+
+	in Func:6			// from instruction (5-0)
+	
+	out Out:5			// 0: pass A
+						// 1: add
+						// 2: sub
+						// 3: and
+						// 4: or
+						// 5: xor
+						// 6: nor
+						// 7: sll
+						// 8: srl
+						// 9: sra
+						// 10: sllv
+						// 11: srlv
+						// 12: srav
+						// 13: mult
+						// 14: div
+						// 15: mfhi
+						// 16: mthi
+						// 17: mflo
+						// 18: mtlo
+						// 19: lui
+						// 20: slt
+						// 21: sltu
+
+
+
+	script
+		var VOp;
+		
+		function FromFunc()
+		{
+			switch( Func.Get() )
+			{
+				case 0: // sll
+					return 7;
+				case 2: // srl
+					return 8;
+				case 3: // sra
+					return 9;
+				case 4: // sllv
+					return 10;
+				case 6: // srlv
+					return 11;
+				case 7: // srav
+					return 12;
+				case 16: // mfhi
+					return 15;
+				case 17: // mthi
+					return 16;
+				case 18: // mflo
+					return 17;
+				case 19: // mtlo
+					return 18;
+				case 24: // mult
+				case 25: // multu
+					return 13;
+				case 26: // div
+				case 27: // divu
+					return 14;
+				case 32: // add
+				case 33: // addu
+					return 1;
+				case 34: // sub
+				case 35: // subu
+					return 2;
+				case 36: // and
+					return 
+				case 37: // or
+					return 4;
+				case 38: // xor
+					return 5;
+				case 39: // nor
+					return 6;
+				case 42: // slt
+					return 20;
+				case 43: // sltu
+					return 21;
+			}
+		}
+		
+		function OnChange()
+		{
+			switch (ALUOp.Get())
+			{
+				case 0: // pass (default)
+					VOp = 0;
+					break;
+				case 1: // from func field
+					VOp = FromFunc();
+					break;
+				case 2: // add
+					VOp = 1;
+					break;
+				case 4: // and
+					VOp = 3;
+					break;
+				case 5: // or
+					VOp = 4;
+				case 6: // xor
+					VOp = 5;
+					break;
+				case 7: // lui
+					VOp = 19;
+					break;
+				case 9: // slt
+					VOp = 20;
+				default:
+					VOp = 0;
+			}
+				
+			Out.Set(VOp);				
+		}
+	end_script
+	
+	event ALL OnChange()
+}
+

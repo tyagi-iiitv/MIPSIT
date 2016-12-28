@@ -1,0 +1,16 @@
+
+class CBranchCmp
+{
+	in In0
+	in In1
+	out Out:1
+
+	script
+		function OnChange()
+			{
+				Out.Set(In0.Get()==In1.Get())
+			}
+	end_script
+	
+	event ALL OnChange()
+}

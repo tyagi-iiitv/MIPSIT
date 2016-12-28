@@ -1,0 +1,19 @@
+
+class CSignExtend
+{
+	in In:16
+	out Out
+
+	
+	script
+		function OnChange()
+			{
+				if ( In.Get()&0x8000 )
+					Out.Set(0xffff0000&In.Get());
+				else
+					Out.Set(In.Get());
+			}
+	end_script
+	
+	event ALL OnChange()
+}

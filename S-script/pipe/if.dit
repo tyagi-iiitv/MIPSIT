@@ -1,0 +1,42 @@
+// components:
+
+object CPC PC
+object CInstrMem InstrMem
+object CMux2 PcMux
+object CiAdd4 IfAdd4
+object CRegIfId RegIfId
+
+// Net list:
+
+// to PC
+connect PcMux.Out PC.In
+
+// to InstrMem
+connect PC.Out InstrMem.Address
+
+// To pc+4 thing
+connect PC.Out IfAdd4.In
+
+// to the pipeline register
+connect InstrMem.ReadData RegIfId.in_Instruction
+connect IfAdd4.Out RegIfId.in_PC
+
+// to the pc mux
+// (only connections from this stage are done here)
+connect IfAdd4.Out PcMux.In0
+
+// connect the clock
+connect clk.Ph0 RegIfId.Ph0
+connect clk.Ph1 RegIfId.Ph1
+
+connect clk.Ph0 PC.Ph0
+connect clk.Ph1 PC.Ph1
+
+// and now some probes:
+probe InstrMem.ReadData 173 393 16 8 1
+probe PC.Out 70 355 16 8 1
+probe IfAdd4.Out 148 171 16 8 1
+probe PcMux.Out 14 355 16 8 1
+probe InstrMem.ReadData 2 4 16 30 2
+probe RegIfId.out_Instruction 220 4 16 30 2
+

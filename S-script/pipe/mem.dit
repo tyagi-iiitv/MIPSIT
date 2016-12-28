@@ -1,0 +1,45 @@
+// create some components
+object CDataMem DataMem
+object CMux2 MemToRegMux
+object CRegMemWb RegMemWb
+
+// connect them
+
+
+// Data memory:
+connect RegExMem.out_MemRead DataMem.MemRead
+connect RegExMem.out_MemWrite DataMem.MemWrite
+connect RegExMem.out_AluResult DataMem.Address
+connect RegExMem.out_WriteData DataMem.WriteData
+
+// the mux
+connect RegExMem.out_MemToReg MemToRegMux.Control
+connect DataMem.ReadData MemToRegMux.In0
+connect RegExMem.out_AluResult MemToRegMux.In1
+
+// the pipeline register
+connect RegExMem.out_RegWrite RegMemWb.in_RegWrite
+connect MemToRegMux.Out RegMemWb.in_WbData
+connect RegExMem.out_WbReg RegMemWb.in_WbReg
+connect RegExMem.out_Instr RegMemWb.in_Instr
+connect clk.Ph0 RegMemWb.Ph0
+connect clk.Ph1 RegMemWb.Ph1
+
+// the register bank is kinda clocked...
+connect clk.Ph2 DataMem.Ph2
+
+// PROBES
+
+
+// Data memory:
+probe RegExMem.out_MemRead 775 234 16 1 0
+probe RegExMem.out_MemWrite 775 437 16 1 0
+probe RegExMem.out_AluResult 756 467 16 8 0
+probe RegExMem.out_WriteData 718 394 16 8 1
+
+// the mux
+probe RegExMem.out_MemToReg 862 350 16 2 4
+probe MemToRegMux.Out 887 324 16 8 1
+
+// the pipline register
+probe RegExMem.out_Instr 690 4 16 30 2

@@ -1,0 +1,35 @@
+class CMux4
+{
+	in In0
+	in In1
+	in In2
+	in In3
+	in Control:2
+
+	out Out
+
+	script
+		function OnChange()
+		{
+		  switch ( Control.Get() )
+		    {
+		      case 0:
+		        Out.Set( In0.Get() );
+		        break;
+		      case 1:
+		        Out.Set( In1.Get() );
+		        break;
+		      case 2:
+		      	Out.Set( In2.Get() );
+		      	break;
+		      case 3:
+		      	Out.Set( In3.Get() );
+		      	break;
+		    }
+		}
+
+		Out.Set(0);
+	end_script
+
+	event ALL OnChange()
+}	

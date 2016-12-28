@@ -1,0 +1,16 @@
+// this is a clock class
+class CConstant31
+{
+	in In
+	out Out
+	
+	script
+		function OnChange()
+		{
+			Out.Set(31);
+		}
+	end_script
+	
+	event ALL OnChange()
+}
+

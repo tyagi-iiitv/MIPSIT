@@ -1,0 +1,76 @@
+
+class CRegExMem
+{
+	// clock
+	in Ph0:1
+	in Ph1:1
+	
+	// inputs
+	in in_RegWrite:1
+    in in_RegDst:1
+    in in_MemRead:3
+    in in_MemWrite:2
+    in in_MemToReg:1
+	in in_AluResult
+	in in_WriteData
+	in in_WbReg:5
+	in in_Instr
+	
+	// outputs
+	out out_RegWrite:1
+    out out_RegDst:1
+    out out_MemRead:3
+    out out_MemWrite:2
+    out out_MemToReg:1
+	out out_AluResult
+	out out_WriteData
+	out out_WbReg:5
+	out out_Instr
+	
+	
+	script
+		// phase 0 transfers inputs to these variables
+		// phase 1 transfers these variables to the outputs
+		
+		var RegWrite;
+    	var RegDst;
+    	var MemRead;
+    	var MemWrite;
+    	var MemToReg;
+		var AluResult;
+		var WriteData;
+		var WbReg;
+		var Instr;
+		
+		function OnPh0()
+			{
+				RegWrite = in_RegWrite.Get();
+    			RegDst = in_RegDst.Get();
+    			MemRead = in_MemRead.Get();
+    			MemWrite = in_MemWrite.Get();
+    			MemToReg = in_MemToReg.Get();
+				AluResult = in_AluResult.Get();
+				WriteData = in_WriteData.Get();
+				WbReg= in_WbReg.Get();
+				Instr = in_Instr.Get();
+			}
+	
+		function OnPh1()
+			{
+				out_RegWrite.Set( RegWrite );
+    			out_RegDst.Set( RegDst );
+    			out_MemRead.Set( MemRead );
+    			out_MemWrite.Set( MemWrite );
+    			out_MemToReg.Set( MemToReg );
+				out_AluResult.Set(AluResult );
+				out_WriteData.Set( WriteData );
+				out_WbReg.Set( WbReg );
+				out_Instr.Set( Instr );
+			}
+		
+	end_script
+	
+	event Ph0 OnPh0()
+	event Ph1 OnPh1()
+}
+

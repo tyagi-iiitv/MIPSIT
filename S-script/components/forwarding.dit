@@ -1,0 +1,35 @@
+class CForwardingUnit
+{
+	in EX_RegWrite:1
+	in MEM_RegWrite:1
+	in ID_ReadRegister1:5
+	in ID_ReadRegister2:5
+	in EX_WriteRegister:5
+	in MEM_WriteRegister:5
+	out ForwardA:2
+	out ForwardB:2
+
+	script
+		function OnChange()
+		{
+			// EX hazard
+			if ( EX_RegWrite.Get() && (EX_WriteRegister.Get()==ID_ReadRegister1.Get()) )
+				ForwardA.Set(2);
+			else if ( MEM_RegWrite.Get() && (MEM_WriteRegister.Get()==ID_ReadRegister1.Get()) )
+				ForwardA.Set(1);
+			else
+				ForwardA.Set(0);
+			
+			
+			if ( EX_RegWrite.Get() && (EX_WriteRegister.Get()==ID_ReadRegister2.Get()) )
+				ForwardB.Set(2);
+			else if ( MEM_RegWrite.Get() && (MEM_WriteRegister.Get()==ID_ReadRegister2.Get()) )
+				ForwardB.Set(1);
+			else
+				ForwardB.Set(0);
+		}
+	end_script
+
+	event ALL OnChange()
+}
+

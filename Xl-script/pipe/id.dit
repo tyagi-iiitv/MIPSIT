@@ -1,0 +1,115 @@
+// create the components in the ID stage
+object CControl Control
+object CShiftLeft2 ShiftLeft2
+object CiAdd BranchAdder
+object CRegisterBank RegisterBank
+object CMux3 ForwardMuxA
+object CBranchCmp BranchCmp
+object CMux3 ForwardMuxB
+object CSignExtend SignExtend
+object CForwardingUnit ForwardingUnit
+object CRegIdEx RegIdEx
+// this one is invisible...
+object CInstrSplit InstrSplit
+
+// CONNECT THINGS
+
+// Jumplogic
+connect RegIfId.out_PC JumpLogic.PC
+connect RegIfId.out_Instruction JumpLogic.Instruction
+
+// the pc-mux in the IF stage:
+connect Control.BranchControl PcMux.Control
+connect BranchAdder.Out PcMux.In0
+connect ForwardMuxA.Out PcMux.In2
+
+// the Control Unit:
+connect RegIfId.out_Instruction Control.Instruction
+connect BranchCmp.Out Control.BranchCondition
+
+// <<2:
+connect SignExtend.Out ShiftLeft2.In
+
+// branch-adder:
+connect ShiftLeft2.Out BranchAdder.InA
+connect RegIfId.out_PC BranchAdder.InB
+
+// register bank:
+// (some are done later...)
+connect InstrSplit.rs RegisterBank.ReadRegister1
+connect InstrSplit.rt RegisterBank.ReadRegister2
+
+// Forward MuxA:
+connect RegisterBank.ReadData1 ForwardMuxA.In0
+connect ForwardingUnit.ForwardA ForwardMuxA.Control
+
+// Forward MuxB:
+connect RegisterBank.ReadData2 ForwardMuxB.In0
+connect ForwardingUnit.ForwardB ForwardMuxB.Control
+
+// Branch cmp:
+connect ForwardMuxA.Out BranchCmp.In0
+connect ForwardMuxB.Out BranchCmp.In1
+
+// signextend:
+connect RegIfId.out_Instruction SignExtend.In
+
+// instrsplit
+connect RegIfId.out_Instruction InstrSplit.Instruction
+
+// forwarding unit:
+connect InstrSplit.rs ForwardingUnit.ID_ReadRegister1
+// connect InstrSplit.rd ForwardingUnit.ID_ReadRegister2	FEL, ty rd=destinationsregister
+connect InstrSplit.rt ForwardingUnit.ID_ReadRegister2		// RÄTT
+
+// the pipe register:
+connect Control.RegWrite RegIdEx.in_RegWrite
+connect Control.RegDst RegIdEx.in_RegDst
+connect Control.ALUSrc RegIdEx.in_ALUSrc
+connect Control.NotJal RegIdEx.in_NotJal
+connect Control.ALUOp RegIdEx.in_ALUOp
+connect Control.MemRead RegIdEx.in_MemRead
+connect Control.MemWrite RegIdEx.in_MemWrite
+connect Control.MemToReg RegIdEx.in_MemToReg
+
+connect RegIfId.out_PC RegIdEx.in_PC
+connect ForwardMuxA.Out RegIdEx.in_Data0
+connect ForwardMuxB.Out RegIdEx.in_Data1
+connect SignExtend.Out RegIdEx.in_Immediate
+
+connect InstrSplit.rt RegIdEx.in_Instr20_16
+connect InstrSplit.rd RegIdEx.in_Instr15_11
+
+
+// Connect the clock
+
+connect clk.Ph0 RegIdEx.Ph0
+connect clk.Ph1 RegIdEx.Ph1
+
+// the register bank is kinda clocked...
+connect clk.Ph2 RegisterBank.Ph2
+
+connect RegIfId.out_Instruction RegIdEx.in_Instr
+
+// probes
+probe InstrSplit.rs 253 305 16 2 0
+probe InstrSplit.rt 253 325 16 2 0
+
+probe ForwardMuxA.Out 437 317 16 8 0
+probe ForwardMuxB.Out 437 394 16 8 0
+probe BranchCmp.Out 360 175 16 1 0
+
+probe ForwardingUnit.ForwardA 403 308 16 3 4
+probe ForwardingUnit.ForwardB 403 387 16 3 4
+
+probe RegIfId.out_Instruction 275 473 16 4 1
+probe SignExtend.Out 364 454 16 8 1
+probe ShiftLeft2.Out 300 250 16 8 0
+
+probe InstrSplit.rt 285 550 16 2 0
+probe InstrSplit.rd 285 565 16 2 0
+
+probe Control.BranchControl 104 143 16 4 4
+
+probe BranchAdder.Out 279 75 16 8 0
+

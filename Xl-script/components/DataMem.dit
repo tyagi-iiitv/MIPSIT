@@ -1,0 +1,41 @@
+// this is the Data memory
+class CDataMem
+{
+	in Ph2
+	in Address
+	in WriteData
+	in MemRead:3
+	in MemWrite:2
+	out ReadData
+
+
+	import bus ReadData
+	import bus Address
+	import bus Operation
+	import bus WriteData
+
+	script
+		function OnPh2()
+		{
+			if ( MemRead.Get() != 0 )
+			{
+				// read
+				bus_Address.Set(Address.Get());
+				bus_Operation.Set(MemRead.Get());
+				ReadData.Set(bus_ReadData.Get());
+			}
+			else if ( MemWrite.Get() != 0 )
+			{
+				
+				// write
+				bus_Address.Set(Address.Get());
+				bus_WriteData.Set(WriteData.Get());
+				bus_Operation.Set(8|MemWrite.Get());
+			}		
+		}
+		
+	end_script
+	
+	event Ph2 OnPh2()
+}
+

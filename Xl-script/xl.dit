@@ -1,0 +1,44 @@
+// This is the main defenition of the DIT XL pipeline
+// Ola Bergqvist 2000
+
+include components\clock.dit
+include components\control.dit
+include components\forwarding.dit
+include components\InstrMem.dit
+include components\JumpLogic.dit
+include components\Mux2.dit
+include components\Mux3.dit
+include components\Mux4.dit
+include components\PC.dit
+include components\RegExMem.dit
+include components\RegIdEx.dit
+include components\RegIfId.dit
+include components\RegMemWb.dit
+include components\RegisterBank.dit
+include components\ShiftLeft2.dit
+include components\SignExtend.dit
+include components\BranchCmp.dit
+include components\InstrSplit.dit
+include components\constant31.dit
+include components\AluControl.dit
+include components\DataMem.dit
+
+// The one and only clock
+object CClock clk
+
+// the one and only bus
+object CiBus bus
+
+// Create the pipline stages
+include pipe\if.dit
+include pipe\id.dit
+include pipe\ex.dit
+include pipe\mem.dit
+include pipe\wb.dit
+
+// Load the picture
+picture graphics\XLrle.bmp
+
+//probe clk.Ph0 100 100 16 8 0
+
+// And the extra line in the end...

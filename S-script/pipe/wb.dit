@@ -1,0 +1,14 @@
+// no components, just some connections
+
+connect RegMemWb.out_RegWrite RegisterBank.RegWrite
+connect RegMemWb.out_WbData RegisterBank.WriteData
+connect RegMemWb.out_WbReg RegisterBank.WriteRegister
+
+
+probe RegMemWb.out_RegWrite 340 412 16 1 0
+probe RegMemWb.out_WbData 964 396 16 8 1
+probe RegMemWb.out_WbData 279 396 16 8 1
+probe RegMemWb.out_WbReg 271 354 16 2 0
+probe RegMemWb.out_WbReg 271 354 16 2 0
+probe RegMemWb.out_Instr 907 4 16 20 2
+

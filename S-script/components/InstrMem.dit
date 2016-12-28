@@ -1,0 +1,23 @@
+// this is the Instruction memory
+class CInstrMem
+{
+	in Address
+	out ReadData
+
+	import bus ReadData
+	import bus Address
+	import bus Operation
+	
+	script
+		function OnChange()
+		{
+			bus_Address.Set( Address.Get() );
+			bus_Operation.Set(1); // Read Word
+			ReadData.Set( bus_ReadData.Get() );
+		}
+		
+	end_script
+	
+	event ALL OnChange()
+}
+

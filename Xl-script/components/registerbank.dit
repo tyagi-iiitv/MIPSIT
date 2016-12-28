@@ -1,0 +1,77 @@
+// a register bank
+class CRegisterBank
+{
+	// inputs:
+	
+	// the register must be kinda clocked to work cause we cant guarantee that
+	// the inputs are all correct
+	// this is the clock input
+	in Ph2:1
+	
+	in ReadRegister1:5
+	in ReadRegister2:5
+	
+	// wb:
+	in RegWrite:1
+	in WriteRegister:5
+	in WriteData
+	
+	
+	// outputs:
+	out ReadData1
+	out ReadData2
+	
+	// ports for register view
+	// maybe I should make the register bank in c++... But what fun would that be
+	in vpRegNbr:5
+	in vpWrite
+	out vpRead
+	out vpUpdate
+	
+	script
+		
+		// registers are stored in this array
+		var R = new Array(32);
+		R[0] = 0;
+
+		function OnPh2()
+			{
+				
+				// write back must be done first.
+				var WbReg = WriteRegister.Get();
+				if ( RegWrite.Get() && WbReg!=0 )
+					{
+						R[WbReg] = WriteData.Get();
+						
+						// notify the view
+						vpUpdate.Set(WbReg);
+					}
+				
+				// and the outputs next:
+				ReadData1.Set( R[ReadRegister1.Get()] );
+				ReadData2.Set( R[ReadRegister2.Get()] );
+			}
+
+	function OnVpRegNbr()
+	{
+		vpRead.Set(R[vpRegNbr.Get()]);
+	}
+
+	function OnVpWrite()
+	{
+		
+		if ( vpRegNbr.Get()!=0 )
+		{
+			R[vpRegNbr.Get()] = vpWrite.Get();
+			vpUpdate.Set(vpRegNbr.Get());
+			ReadData1.Set( R[ReadRegister1.Get()] );
+			ReadData2.Set( R[ReadRegister2.Get()] );
+		}
+	}
+		
+	end_script
+	
+	event Ph2 OnPh2()
+	event vpRegNbr OnVpRegNbr()
+	event vpWrite OnVpWrite();
+}

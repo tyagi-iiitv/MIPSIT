@@ -1,0 +1,22 @@
+// this is a clock class
+class CClock
+{
+	in Tick:1
+	out Ph0
+	out Ph1
+	out Ph2
+
+	script
+		function OnTick()
+		{
+			Ph0.Set(count);
+			Ph1.Set(count);
+			Ph2.Set(count);
+			count++;
+		}
+		count = 0x0;
+	end_script
+	
+	event Tick OnTick()
+}
+

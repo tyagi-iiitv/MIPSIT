@@ -1,0 +1,40 @@
+// this is the Program Counter
+class CPC
+{
+	in Ph0:1
+	in Ph1:1
+	
+	in In
+	out Out
+	out vpUpdate
+	in vpWrite
+
+	script
+		var rPC = 0;
+		
+		function OnPh0()
+		{
+			rPC = In.Get();
+		}
+	
+		function OnPh1()
+		{
+			Out.Set(rPC);
+			
+			// notify the register view
+			vpUpdate.Set(32);
+		}
+		
+		function OnVpWrite()
+		{
+			rPC = vpWrite.Get();
+			OnPh1();
+		}
+	
+	end_script
+	
+	event Ph0 OnPh0()
+	event Ph1 OnPh1()
+	event vpWrite OnVpWrite()
+}
+

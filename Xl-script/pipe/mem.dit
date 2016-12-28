@@ -1,0 +1,56 @@
+// create some components
+object CDataMem DataMem
+object CMux2 MemToRegMux
+object CRegMemWb RegMemWb
+
+// connect them
+
+// to forwarding unit:
+connect RegExMem.out_RegWrite ForwardingUnit.MEM_RegWrite
+connect RegExMem.out_WbReg ForwardingUnit.MEM_WriteRegister
+connect MemToRegMux.Out ForwardMuxA.In1
+connect MemToRegMux.Out ForwardMuxB.In1
+
+// Data memory:
+connect RegExMem.out_MemRead DataMem.MemRead
+connect RegExMem.out_MemWrite DataMem.MemWrite
+connect RegExMem.out_AluResult DataMem.Address
+connect RegExMem.out_WriteData DataMem.WriteData
+
+// the mux
+connect RegExMem.out_MemToReg MemToRegMux.Control
+connect DataMem.ReadData MemToRegMux.In0
+connect RegExMem.out_AluResult MemToRegMux.In1
+
+// the pipeline register
+connect RegExMem.out_RegWrite RegMemWb.in_RegWrite
+connect MemToRegMux.Out RegMemWb.in_WbData
+connect RegExMem.out_WbReg RegMemWb.in_WbReg
+connect RegExMem.out_Instr RegMemWb.in_Instr
+connect clk.Ph0 RegMemWb.Ph0
+connect clk.Ph1 RegMemWb.Ph1
+
+// the register bank is kinda clocked...
+connect clk.Ph2 DataMem.Ph2
+
+// PROBES
+
+// to forwarding unit:
+probe RegExMem.out_RegWrite 823 667
+probe RegExMem.out_WbReg 733 668 16 2 0
+probe MemToRegMux.Out 872 471 16 8 1
+
+
+// Data memory:
+probe RegExMem.out_MemRead 786 312 16 1 0
+probe RegExMem.out_MemWrite 769 312 16 1 0
+probe RegExMem.out_AluResult 768 475 16 8 0
+probe RegExMem.out_WriteData 730 428 16 8 1
+
+// the mux
+probe RegExMem.out_MemToReg 848 387 16 2 4
+probe MemToRegMux.Out 897 370 16 8 1
+
+// the pipline register
+probe RegExMem.out_Instr 725 4 16 25 2
+probe RegExMem.out_RegWrite 858 215 16 1 0
