@@ -1,2 +1,2 @@
 # MIPSIT
-MIPSIT tool for windows developed at LUND University. Only for educational purposes.
+MIPSIT tool for windows. Only for educational purposes.
